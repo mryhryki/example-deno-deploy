@@ -12,9 +12,15 @@ Deno.serve(async (request: Request): Promise<Response> => {
   await kv.set([key], uuid);
   await kv.enqueue({ key, uuid }, { delay: 3000 });
 
+
   const data = {
+    id: crypto.randomUUID(),
     method: request.method,
     url: request.url,
+    headers: Array.from(request.headers.entries()).reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string,string>)
   }
 
   return new Response(JSON.stringify(data, null, 2), {
